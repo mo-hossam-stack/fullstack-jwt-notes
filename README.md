@@ -1,21 +1,35 @@
-## full-stack Notes App (DRF + React)
+## Full-Stack Notes App (DRF + React)
 
-A full‑stack starter that provides a JWT‑secured Django REST API for personal notes and a React (Vite) frontend scaffold. It includes user registration, token auth, and note CRUD (list, create, delete for the authenticated user).
+A production-ready full‑stack application that provides a JWT‑secured Django REST API for personal notes and a modern React (Vite) frontend. It includes user registration, token-based authentication, and complete note CRUD operations (list, create, delete) for authenticated users.
 
 ### Tech Stack
-- **Backend**: Django 5, Django REST Framework, Simple JWT, CORS Headers, postgresql
-- **Frontend**: React 19 with Vite, React Router, Axios
+- **Backend**: Django 5, Django REST Framework, Simple JWT, CORS Headers, PostgreSQL/SQLite
+- **Frontend**: React 19 with Vite, React Router, Axios, Context API
 
 ---
 
 ## Features
-- **JWT Authentication**: Obtain/refresh tokens via `/api/token/` and `/api/token/refresh/`
-- **User Registration**: `POST /api/user/register/`
-- **Notes API**:
-  - `GET /api/notes/` – list notes of the current user
-  - `POST /api/notes/` – create a note for the current user
-  - `DELETE /api/notes/delete/:id/` – delete your note
-- **CORS enabled** for local React development
+
+### Authentication & Security
+- **JWT Authentication**: Secure token-based authentication with automatic refresh
+- **User Registration**: Simple registration with username and password
+- **Token Management**: Automatic token refresh on expiration
+- **Protected Routes**: Frontend route protection with authentication checks
+
+### Frontend Features
+- **Modern UI/UX**: Clean, responsive design with smooth animations
+- **Toast Notifications**: User-friendly error and success notifications
+- **Form Validation**: Client-side validation with error messages
+- **Loading States**: Visual feedback during API operations
+- **Empty States**: Helpful messages when no data is available
+- **Responsive Design**: Mobile-first approach with breakpoints
+- **Context API**: Centralized state management for authentication
+
+### Notes Management
+- **List Notes**: View all your notes in a grid layout
+- **Create Notes**: Simple form to create new notes with title and content
+- **Delete Notes**: Confirmation dialog before deletion
+- **Real-time Updates**: Automatic refresh after create/delete operations
 
 ---
 
@@ -42,10 +56,11 @@ A full‑stack starter that provides a JWT‑secured Django REST API for persona
  ./venv/Scripts/Activate.ps1
  ```
  
- 3) Install backend dependencies
- ```bash
- pip install -r backend/requirment.txt
- ```
+3) Install backend dependencies
+```bash
+pip install -r backend/requirment.txt
+```
+**Note**: The requirements file is named `requirment.txt` (typo). Consider renaming it to `requirements.txt` for better convention.
  
  4) Configure environment
  - Create a file `backend/backend/.env` with at least:
@@ -77,9 +92,9 @@ A full‑stack starter that provides a JWT‑secured Django REST API for persona
  ```
  
  Tip: If you prefer a single terminal sequence on Windows PowerShell, run:
- ```bash
- git clone https://github.com/mo-hossam-stack/fullstack-jwt-notes.git; cd fullstack-jwt-notes; python -m venv venv; ./venv/Scripts/Activate.ps1; pip install -r backend/requirment.txt; Set-Content -Path backend/backend/.env -Value "SECRET_KEY=dev-key`nDEBUG=True`nALLOWED_HOSTS=*"; python backend/manage.py migrate; python backend/manage.py runserver
- ```
+```bash
+git clone https://github.com/mo-hossam-stack/fullstack-jwt-notes.git; cd fullstack-jwt-notes; python -m venv venv; ./venv/Scripts/Activate.ps1; pip install -r backend/requirment.txt; Set-Content -Path backend/backend/.env -Value "SECRET_KEY=dev-key-$(Get-Random)`nDEBUG=True`nALLOWED_HOSTS=*"; python backend/manage.py migrate; python backend/manage.py runserver
+```
  Open another terminal for the frontend:
  ```bash
  cd frontend; npm install; npm run dev
@@ -142,9 +157,14 @@ npm run dev
 
 Vite will print a local URL (typically `http://127.0.0.1:5173`).
 
-Notes:
-- The frontend is scaffolded. You can wire API calls in `frontend/src/api.js` and constants (e.g., API base URL) in `frontend/src/constants.js`.
-- Default CORS is open in development per Django settings.
+**Frontend Configuration**:
+- API base URL can be configured via `VITE_API_BASE_URL` environment variable (defaults to `http://127.0.0.1:8000`)
+- Create `frontend/.env` file if you need to customize:
+  ```env
+  VITE_API_BASE_URL=http://127.0.0.1:8000
+  ```
+
+**Note**: CORS is configured to allow all origins in development. Update `backend/backend/settings.py` for production.
 
 ---
 
