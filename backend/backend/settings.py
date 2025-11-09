@@ -108,18 +108,23 @@ STATIC_URL = "static/"
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# CORS
+# CORS Configuration
+# Note: CORS_ALLOWED_ORIGINS should only contain frontend origins, not backend
 CORS_ALLOWED_ORIGINS = [
     "https://fullstack-jwt-notes.vercel.app",
-    "https://fullstack-jwt-notes-production.up.railway.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Allow all origins in development, restrict in production
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # In production, ensure CORS is properly configured
+    # Make sure the frontend origin is exactly in CORS_ALLOWED_ORIGINS
+    CORS_ALLOW_ALL_ORIGINS = False
 
 # CORS headers for preflight requests
 CORS_ALLOW_HEADERS = [
@@ -142,3 +147,6 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
+# Preflight cache duration (in seconds)
+CORS_PREFLIGHT_MAX_AGE = 86400  # 24 hours

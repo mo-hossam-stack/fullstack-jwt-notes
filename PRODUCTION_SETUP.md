@@ -71,27 +71,93 @@ VITE_API_BASE_URL=https://fullstack-jwt-notes-production.up.railway.app
 
 ## Common Issues & Solutions
 
+### Issue: Network Error / Cannot see requests in Network tab
+**This is the most common issue!**
+
+**Symptoms:**
+- "Network Error" message
+- No requests visible in browser Network tab
+- Console shows "NOT SET" for VITE_API_BASE_URL
+
+**Solution:**
+1. **Check Vercel Environment Variables:**
+   - Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+   - Verify `VITE_API_BASE_URL` exists and is set to `https://fullstack-jwt-notes-production.up.railway.app`
+   - Make sure it's enabled for **Production** environment
+   
+2. **Rebuild Frontend:**
+   - After setting/updating the environment variable, you MUST redeploy
+   - Go to Vercel Dashboard → Your Project → Deployments
+   - Click "Redeploy" on the latest deployment, or push a new commit
+   - **Important:** Vite environment variables are baked into the build at build time, so you must rebuild!
+
+3. **Verify in Browser Console:**
+   - Open your deployed frontend
+   - Open browser console (F12)
+   - Look for: `🔗 API Base URL:` - it should show your Railway URL
+   - If it shows `http://127.0.0.1:8000` or `NOT SET`, the environment variable isn't configured correctly
+
+4. **Check Backend CORS:**
+   - Make sure `https://fullstack-jwt-notes.vercel.app` is in `CORS_ALLOWED_ORIGINS`
+   - Verify backend is running and accessible
+
 ### Issue: CORS Error
-**Solution:** Make sure `https://fullstack-jwt-notes.vercel.app` is in `CORS_ALLOWED_ORIGINS` in `backend/backend/settings.py`
+**Solution:** 
+- Make sure `https://fullstack-jwt-notes.vercel.app` is in `CORS_ALLOWED_ORIGINS` in `backend/backend/settings.py`
+- Check browser console for specific CORS error message
+- Verify backend allows OPTIONS requests (preflight)
 
 ### Issue: 400 Bad Request / Invalid Host Header
-**Solution:** Add `fullstack-jwt-notes-production.up.railway.app` to `ALLOWED_HOSTS` in backend `.env`
+**Solution:** 
+- Add `fullstack-jwt-notes-production.up.railway.app` to `ALLOWED_HOSTS` in backend `.env` on Railway
+- Make sure `ALLOWED_HOSTS` doesn't include `https://` - just the domain name
 
 ### Issue: API calls going to wrong URL
 **Solution:** 
-- Check `VITE_API_BASE_URL` in Vercel dashboard
+- Check browser console for `🔗 API Base URL:` log
+- Verify `VITE_API_BASE_URL` in Vercel dashboard
 - Rebuild the frontend after setting the variable
-- Clear browser cache
+- Clear browser cache (Ctrl+Shift+R or Cmd+Shift+R)
 
 ### Issue: Environment variable not working
 **Solution:** 
 - Vite environment variables must start with `VITE_`
-- Rebuild the frontend after changing environment variables
+- **You MUST rebuild/redeploy after changing environment variables**
 - For Vercel, set it in the dashboard, not just in `.env` file
+- Check that the variable is enabled for the correct environment (Production/Preview/Development)
 
 ## Next Steps
 
-1. Set `VITE_API_BASE_URL` in Vercel dashboard
-2. Update backend `.env` on Railway with correct `ALLOWED_HOSTS`
-3. Rebuild and redeploy both frontend and backend
-4. Test the connection
+1. **Set `VITE_API_BASE_URL` in Vercel dashboard:**
+   - Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+   - Add: `VITE_API_BASE_URL` = `https://fullstack-jwt-notes-production.up.railway.app`
+   - Enable for Production environment
+   - **IMPORTANT:** Redeploy after adding the variable!
+
+2. **Update backend `.env` on Railway:**
+   - Go to Railway Dashboard → Your Project → Variables
+   - Set `ALLOWED_HOSTS` = `fullstack-jwt-notes-production.up.railway.app,localhost,127.0.0.1`
+   - Set `DEBUG` = `False`
+   - Railway will automatically restart the backend
+
+3. **Rebuild and redeploy both frontend and backend:**
+   - Frontend: Redeploy in Vercel (or push a new commit)
+   - Backend: Railway will auto-restart when you update variables
+
+4. **Test the connection:**
+   - Open your deployed frontend
+   - Open browser console (F12)
+   - Check for `🔗 API Base URL:` - should show Railway URL
+   - Try to register a new account
+   - Check Network tab for API requests
+   - If you see "Network Error", check the console logs for details
+
+## Quick Debug Checklist
+
+- [ ] `VITE_API_BASE_URL` is set in Vercel dashboard
+- [ ] Frontend has been redeployed after setting the variable
+- [ ] Browser console shows correct API URL (not "NOT SET")
+- [ ] Backend `ALLOWED_HOSTS` includes Railway domain
+- [ ] Backend CORS includes Vercel frontend URL
+- [ ] Backend is running and accessible
+- [ ] No CORS errors in browser console
