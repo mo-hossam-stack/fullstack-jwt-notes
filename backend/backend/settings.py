@@ -11,7 +11,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1")
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+
+# Parse ALLOWED_HOSTS - handle both comma-separated and space-separated
+allowed_hosts_str = os.getenv("ALLOWED_HOSTS", "*")
+if allowed_hosts_str == "*":
+    ALLOWED_HOSTS = ["*"]
+else:
+    # Split by comma, strip whitespace, and filter empty strings
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(",") if host.strip()]
 
 # REST Framework & JWT
 REST_FRAMEWORK = {
@@ -118,15 +125,12 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Allow all origins in development, restrict in production
+# Explicitly disable allowing all origins in production
+CORS_ALLOW_ALL_ORIGINS = False
+
+# Allow all origins only in development
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
-else:
-    # In production, ensure CORS is properly configured
-    # Make sure the frontend origin is exactly in CORS_ALLOWED_ORIGINS
-    CORS_ALLOW_ALL_ORIGINS = False
-    # Explicitly set to ensure CORS headers are sent
-    CORS_ORIGIN_ALLOW_ALL = False
 
 # CORS headers for preflight requests
 CORS_ALLOW_HEADERS = [
