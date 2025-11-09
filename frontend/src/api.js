@@ -5,11 +5,16 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from './constants';
 const apiUrlRaw = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 const apiUrl = apiUrlRaw.replace(/\/+$/, ''); // Remove trailing slashes
 
+// Debug: Log API URL (always log to help debug production issues)
+console.log('🔗 API Base URL:', apiUrl);
+console.log('🔗 Environment variable VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL || 'NOT SET');
+
 const api = axios.create({
   baseURL: apiUrl,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 second timeout
 });
 
 // Request interceptor
@@ -19,9 +24,14 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Debug: Log request URL
+    if (import.meta.env.DEV) {
+      console.log('Making request to:', config.baseURL + config.url);
+    }
     return config;
   },
   (error) => {
+    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -57,6 +67,30 @@ api.interceptors.response.use(
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
+    }
+
+    // Handle network errors (no response from server)
+    if (!error.response) {
+      console.error('Network Error:', {
+        message: error.message,
+        code: error.code,
+        config: {
+          url: error.config?.url,
+          baseURL: error.config?.baseURL,
+          method: error.config?.method,
+        },
+      });
+      
+      const networkErrorMessage = error.code === 'ECONNABORTED' 
+        ? 'Request timeout. Please check your connection.'
+        : error.message === 'Network Error'
+        ? 'Cannot connect to server. Please check if the backend is running and CORS is configured correctly.'
+        : error.message || 'Network error occurred';
+      
+      if (typeof window !== 'undefined' && window.showToast) {
+        window.showToast(networkErrorMessage, 'error');
+      }
+      return Promise.reject(error);
     }
 
     // Handle other errors
