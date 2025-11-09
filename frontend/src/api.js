@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from './constants';
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+// Get API URL and remove trailing slash if present
+const apiUrlRaw = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const apiUrl = apiUrlRaw.replace(/\/+$/, ''); // Remove trailing slashes
 
 const api = axios.create({
   baseURL: apiUrl,
