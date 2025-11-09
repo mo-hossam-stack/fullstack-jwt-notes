@@ -125,6 +125,8 @@ else:
     # In production, ensure CORS is properly configured
     # Make sure the frontend origin is exactly in CORS_ALLOWED_ORIGINS
     CORS_ALLOW_ALL_ORIGINS = False
+    # Explicitly set to ensure CORS headers are sent
+    CORS_ORIGIN_ALLOW_ALL = False
 
 # CORS headers for preflight requests
 CORS_ALLOW_HEADERS = [
