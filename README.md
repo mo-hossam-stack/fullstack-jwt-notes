@@ -2,9 +2,15 @@
 
 A production-ready full‑stack application that provides a JWT‑secured Django REST API for personal notes and a modern React (Vite) frontend. It includes user registration, token-based authentication, and complete note CRUD operations (list, create, delete) for authenticated users.
 
+### 🌐 Live Demo
+
+- **Frontend**: [https://fullstack-jwt-notes.vercel.app](https://fullstack-jwt-notes.vercel.app)
+- **Backend API**: [https://fullstack-jwt-notes-production.up.railway.app](https://fullstack-jwt-notes-production.up.railway.app)
+
 ### Tech Stack
-- **Backend**: Django 5, Django REST Framework, Simple JWT, CORS Headers, PostgreSQL/SQLite
+- **Backend**: Django 5, Django REST Framework, Simple JWT, CORS Headers, SQLite/MySQL
 - **Frontend**: React 19 with Vite, React Router, Axios, Context API
+- **Deployment**: Railway (Backend), Vercel (Frontend)
 
 ---
 
@@ -12,9 +18,13 @@ A production-ready full‑stack application that provides a JWT‑secured Django
 
 ### Authentication & Security
 - **JWT Authentication**: Secure token-based authentication with automatic refresh
+  - **Custom JWT Token Serializer**: Extended Django's JWT to include username in token payload
+  - **Token Refresh Mechanism**: Automatic token renewal on expiration via Axios interceptors
+  - **Stateless Authentication**: No server-side sessions, fully scalable architecture
+  - **Secure Token Storage**: Proper handling of access (30 min) and refresh (1 day) tokens
 - **User Registration**: Simple registration with username and password
-- **Token Management**: Automatic token refresh on expiration
 - **Protected Routes**: Frontend route protection with authentication checks
+- **CORS Configuration**: Production-ready CORS setup for secure cross-origin requests
 
 ### Frontend Features
 - **Modern UI/UX**: Clean, responsive design with smooth animations
@@ -189,17 +199,46 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 
 ## API Reference
 
+### Production API
+Base URL: `https://fullstack-jwt-notes-production.up.railway.app`
+
+### Local Development
 Base URL: `http://127.0.0.1:8000`
 
-Auth endpoints:
-- `POST /api/user/register/`
-- `POST /api/token/` (obtain access+refresh)
-- `POST /api/token/refresh/`
+### Authentication Endpoints
 
-Notes endpoints (require `Authorization: Bearer <access>`):
-- `GET /api/notes/`
-- `POST /api/notes/`
-- `DELETE /api/notes/delete/<id>/`
+**Register User**
+- `POST /api/user/register/` - Create a new user account
+  - Request: `{"username": "string", "password": "string"}`
+  - Response: `201 Created` with user data
+
+**Obtain JWT Tokens**
+- `POST /api/token/` - Login and get access + refresh tokens
+  - Request: `{"username": "string", "password": "string"}`
+  - Response: 
+    ```json
+    {
+      "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+      "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+    }
+    ```
+  - **JWT Token Payload**: Includes `username`, `user_id`, `exp`, `iat`
+  - **Access Token**: Valid for 30 minutes
+  - **Refresh Token**: Valid for 1 day
+
+**Refresh Access Token**
+- `POST /api/token/refresh/` - Get new access token using refresh token
+  - Request: `{"refresh": "refresh-token-string"}`
+  - Response: `{"access": "new-access-token"}`
+
+### Notes Endpoints (Require Authentication)
+
+All notes endpoints require `Authorization: Bearer <access-token>` header.
+
+- `GET /api/notes/` - List all notes for authenticated user
+- `POST /api/notes/` - Create a new note
+  - Request: `{"title": "string", "content": "string"}`
+- `DELETE /api/notes/delete/<id>/` - Delete a note by ID
 
 ### Request/Response Examples
 
